@@ -20,6 +20,9 @@ if { [info exists EQ3_SERVICE_HS485D_PORT] } {
 }
 set HS485D_URL "bin://127.0.0.1:$portnumber"
 
+set KEYSERVER_HOST "secgtw.homematic.com"
+set KEYSERVER_PORT 8443
+
 
 proc getButton {class onclick title} {
   set html ""
@@ -445,7 +448,9 @@ puts "</div>"
             puts "([get_new_device_count] \${dialogNewDevicesfooterBtnDeviceInputB})"
           }
         }
-        table_data {class="CLASS21206"} {}
+        table_data {class="CLASS21206"} {
+          puts "<span id='keyserver_status' style='display:inline-block; margin-left:100px;'>\${dialogKeyserverChecking}</span>"
+        }
       }
     }
   }
@@ -455,6 +460,25 @@ puts "</div>"
     puts "var url = \"$env(SCRIPT_NAME)?sid=\" + SessionId;"
     puts "var installTimerHmIP = 0;"
     puts {
+      checkKeyserver = function() {
+        new Ajax.Request(url, {
+          method: "post",
+          postBody: "action=check_keyserver",
+          onSuccess: function(transport) {
+            var elem = document.getElementById("keyserver_status");
+            if (!elem) return;
+            var result = transport.responseText.trim();
+            var key = result === "reachable" ? "dialogKeyserverReachable" :
+                      result === "unreachable" ? "dialogKeyserverUnreachable" :
+                      "dialogKeyserverCheckFailed";
+            elem.textContent = translateKey(key) || key;
+          },
+          onFailure: function() {
+            var elem = document.getElementById("keyserver_status");
+            if (elem) elem.textContent = translateKey("dialogKeyserverCheckFailed") || "dialogKeyserverCheckFailed";
+          }
+        });
+      };
       update_new_device_count = function() {
         var pb = "action=get_new_device_count";
         var opts = {
@@ -764,6 +788,7 @@ puts "</div>"
     }
 
     puts "translatePage('#messagebox');"
+    puts "checkKeyserver();"
     puts "dlgPopup.readaptSize();"
 
   }
@@ -979,6 +1004,15 @@ proc action_wir_search {} {
 
 proc action_get_new_device_count {} {
   puts [get_new_device_count]
+}
+
+proc action_check_keyserver {} {
+  global KEYSERVER_HOST KEYSERVER_PORT
+  if {[catch {exec nc -z -w 3 $KEYSERVER_HOST $KEYSERVER_PORT}]} {
+    puts "unreachable"
+  } else {
+    puts "reachable"
+  }
 }
 
 cgi_eval {
