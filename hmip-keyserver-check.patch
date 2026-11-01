@@ -1,17 +1,18 @@
 diff --git a/buildroot-external/package/openccu-base/rootfs-patches/0039-WebUI-Fix-Style-Glitches/rootfs/www/config/cp_add_device.cgi b/buildroot-external/package/openccu-base/rootfs-patches/0039-WebUI-Fix-Style-Glitches/rootfs/www/config/cp_add_device.cgi
+index edda1c5..65f17ba 100644
 --- a/buildroot-external/package/openccu-base/rootfs-patches/0039-WebUI-Fix-Style-Glitches/rootfs/www/config/cp_add_device.cgi
 +++ b/buildroot-external/package/openccu-base/rootfs-patches/0039-WebUI-Fix-Style-Glitches/rootfs/www/config/cp_add_device.cgi
-@@ -19,6 +19,9 @@
-   set portnumber $EQ3_SERVICE_HS485D_PORT
+@@ -20,6 +20,9 @@ if { [info exists EQ3_SERVICE_HS485D_PORT] } {
  }
  set HS485D_URL "bin://127.0.0.1:$portnumber"
-+
+ 
 +set KEYSERVER_HOST "secgtw.homematic.com"
 +set KEYSERVER_PORT 8443
- 
++
  
  proc getButton {class onclick title} {
-@@ -445,7 +448,9 @@
+   set html ""
+@@ -445,7 +448,9 @@ puts "</div>"
              puts "([get_new_device_count] \${dialogNewDevicesfooterBtnDeviceInputB})"
            }
          }
@@ -22,7 +23,7 @@ diff --git a/buildroot-external/package/openccu-base/rootfs-patches/0039-WebUI-F
        }
      }
    }
-@@ -455,6 +460,25 @@
+@@ -455,6 +460,25 @@ puts "</div>"
      puts "var url = \"$env(SCRIPT_NAME)?sid=\" + SessionId;"
      puts "var installTimerHmIP = 0;"
      puts {
@@ -48,7 +49,7 @@ diff --git a/buildroot-external/package/openccu-base/rootfs-patches/0039-WebUI-F
        update_new_device_count = function() {
          var pb = "action=get_new_device_count";
          var opts = {
-@@ -764,6 +788,7 @@
+@@ -764,6 +788,7 @@ puts "</div>"
      }
  
      puts "translatePage('#messagebox');"
@@ -56,7 +57,7 @@ diff --git a/buildroot-external/package/openccu-base/rootfs-patches/0039-WebUI-F
      puts "dlgPopup.readaptSize();"
  
    }
-@@ -981,6 +1006,15 @@
+@@ -981,6 +1006,15 @@ proc action_get_new_device_count {} {
    puts [get_new_device_count]
  }
  
